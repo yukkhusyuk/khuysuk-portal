@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pustaka Member · Yuk Khusyuk</title>
+<meta name="description" content="Ruang akses member Yuk Khusyuk — kumpulan e-book, app, dan tools untuk perjalanan khusyukmu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --ink:#0e0d0b; --ink2:#14110a; --panel:#17130c; --panel2:#1d1810;
+  --gold:#d8b56b; --gold-soft:#e6cd96; --gold-d:#b8923f;
+  --cream:#efe6d4; --cream-d:#cdbfa3; --muted:#9a8f78; --line:rgba(216,181,107,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--cream);font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:
+  radial-gradient(1100px 620px at 50% -8%, rgba(216,181,107,.12), transparent 60%),
+  radial-gradient(800px 500px at 50% 108%, rgba(216,181,107,.07), transparent 60%),
+  var(--ink);
+  display:flex;flex-direction:column;align-items:center;padding:0 20px}
+.wrap{width:100%;max-width:1000px;margin:0 auto}
+a{color:inherit;text-decoration:none}
+.serif{font-family:'Fraunces',serif}
+
+/* header */
+header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:22px 0 10px;max-width:1000px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(160deg,#211a0f,#0f0c07);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.brand .nm{font-weight:700;letter-spacing:.14em;font-size:12px;color:var(--gold-soft);text-transform:uppercase}
+.brand .sb{font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+#whoami{display:none;align-items:center;gap:10px;font-size:12.5px;color:var(--cream-d)}
+#whoami .em{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ghostbtn{border:1px solid var(--line);background:transparent;color:var(--cream-d);font-family:inherit;font-size:12px;font-weight:600;padding:8px 13px;border-radius:10px;cursor:pointer;transition:.15s}
+.ghostbtn:hover{border-color:var(--gold);color:var(--gold-soft)}
+
+/* hero / auth */
+.hero{text-align:center;padding:46px 0 10px}
+.kicker{font-size:11.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-d);font-weight:600;margin-bottom:18px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,6vw,46px);line-height:1.08;letter-spacing:-.01em}
+.hero h1 .g{color:var(--gold)}
+.hero p{color:var(--cream-d);font-size:15px;line-height:1.65;max-width:520px;margin:16px auto 0}
+
+.authcard{max-width:430px;margin:30px auto 0;background:linear-gradient(180deg,var(--panel),#120f09);border:1px solid var(--line);border-radius:20px;padding:26px 24px;text-align:center}
+.gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:11px;background:#fff;color:#1f1f1f;border:none;border-radius:13px;padding:14px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:.15s;box-shadow:0 6px 22px rgba(0,0,0,.35)}
+.gbtn:hover{transform:translateY(-1px)}
+.gbtn:active{transform:translateY(0)}
+.gbtn svg{width:20px;height:20px;flex:none}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:11.5px;margin:16px 0;letter-spacing:.04em}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.emailrow{display:none;flex-direction:column;gap:10px}
+.emailrow.show{display:flex}
+.emailrow input{background:#0d0b07;border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--cream);font-family:inherit;font-size:14.5px;text-align:center}
+.emailrow input:focus{outline:none;border-color:var(--gold)}
+.goldbtn{background:linear-gradient(180deg,var(--gold),var(--gold-d));color:#241a07;border:none;border-radius:12px;padding:13px;font-family:inherit;font-weight:700;font-size:14.5px;cursor:pointer;transition:.15s}
+.goldbtn:hover{filter:brightness(1.05)}
+.linklike{background:none;border:none;color:var(--gold-soft);font-family:inherit;font-size:12.5px;cursor:pointer;margin-top:14px;text-decoration:underline;text-underline-offset:3px}
+.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:18px}
+.msg{display:none;font-size:13px;border-radius:11px;padding:11px 13px;margin-top:14px;line-height:1.5}
+.msg.show{display:block}
+.msg.ok{background:rgba(216,181,107,.1);border:1px solid var(--line);color:var(--gold-soft)}
+.msg.err{background:rgba(200,80,80,.12);border:1px solid rgba(200,80,80,.3);color:#e7b4b4}
+
+/* library */
+#library{display:none;padding:34px 0 10px}
+#library.show{display:block}
+.lib-h{text-align:center;margin-bottom:8px}
+.lib-h .kick{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-d);font-weight:600}
+.lib-h h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(24px,5vw,34px);margin-top:8px}
+.lib-h p{color:var(--cream-d);font-size:13.5px;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:26px}
+@media(max-width:680px){.grid{grid-template-columns:1fr}}
+.card{position:relative;background:linear-gradient(180deg,var(--panel),#120f09);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:.18s;overflow:hidden}
+.card:hover{transform:translateY(-3px);border-color:rgba(216,181,107,.45)}
+.card .ic{width:50px;height:50px;border-radius:14px;background:radial-gradient(circle at 30% 30%,#2a2112,#15110a);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px}
+.card .tag{position:absolute;top:16px;right:16px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-d);border:1px solid var(--line);padding:4px 8px;border-radius:20px}
+.card h3{font-family:'Fraunces',serif;font-weight:600;font-size:19px;line-height:1.2}
+.card .desc{font-size:13px;color:var(--cream-d);line-height:1.55;flex:1}
+.card .open{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;background:linear-gradient(180deg,var(--gold),var(--gold-d));color:#241a07;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:11px;margin-top:2px;transition:.15s}
+.card .open:hover{filter:brightness(1.06);gap:10px}
+
+/* denied */
+#denied{display:none;max-width:440px;margin:40px auto 0;text-align:center;background:linear-gradient(180deg,var(--panel),#120f09);border:1px solid var(--line);border-radius:20px;padding:30px 26px}
+#denied.show{display:block}
+#denied .em{color:var(--gold-soft);font-weight:600;word-break:break-all}
+#denied h2{font-family:'Fraunces',serif;font-weight:600;font-size:23px;margin-bottom:12px}
+#denied p{color:var(--cream-d);font-size:14px;line-height:1.7;margin-bottom:8px}
+.wa{display:inline-flex;align-items:center;gap:9px;background:#1f3d2e;border:1px solid #2e5a43;color:#cdeedd;font-weight:700;font-size:14px;padding:12px 18px;border-radius:12px;margin-top:16px}
+
+/* demo banner */
+#demo{display:none;width:100%;max-width:1000px;margin:14px auto 0;background:rgba(216,181,107,.08);border:1px dashed var(--line);border-radius:13px;padding:11px 14px;font-size:12px;color:var(--muted);text-align:center;line-height:1.6}
+#demo.show{display:block}
+#demo b{color:var(--gold-soft)}
+#demo .dbtns{display:flex;gap:8px;justify-content:center;margin-top:9px;flex-wrap:wrap}
+#demo button{font-size:11.5px;padding:7px 11px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--cream-d);cursor:pointer;font-family:inherit}
+#demo button:hover{border-color:var(--gold);color:var(--gold-soft)}
+
+footer{width:100%;max-width:1000px;margin:40px auto;padding-top:22px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:12px;line-height:1.8}
+footer a{color:var(--gold-soft)}
+.spin{display:none;margin:60px auto;width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:sp 1s linear infinite}
+.spin.show{display:block}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 64 64" width="22" height="22" aria-hidden="true"><circle cx="30" cy="20" r="8" fill="#d8b56b"/><path d="M16 48c2-11 9-18 18-16 6 1.3 10.5 6 12.5 13.2l-10 2.8c-1.2-3.8-3.6-5.6-6.6-5.6-4.6 0-7.6 4-8.4 9z" fill="#d8b56b"/></svg>
+    </div>
+    <div>
+      <div class="nm">Yuk Khusyuk</div>
+      <div class="sb">Pustaka Member</div>
+    </div>
+  </div>
+  <div id="whoami">
+    <span class="em" id="meEmail"></span>
+    <button class="ghostbtn" onclick="doLogout()">Keluar</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div id="spin" class="spin"></div>
+
+  <!-- LOGGED OUT -->
+  <section id="gate">
+    <div class="hero">
+      <div class="kicker">Akses Member</div>
+      <h1 class="serif">Ruang lengkap untuk<br>perjalanan <span class="g">khusyuk</span>mu</h1>
+      <p>Semua yang kamu beli ada di satu tempat — e-book, app belajar sholat, tools, sampai journal harian. Masuk dengan akun yang kamu pakai saat pembelian.</p>
+    </div>
+
+    <div class="authcard">
+      <button class="gbtn" onclick="doGoogle()">
+        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22 22-9.8 22-22c0-1.3-.1-2.5-.4-3.5z"/><path fill="#FF3D00" d="M3.2 13.3l6.6 4.8C11.5 14.1 17.3 10 24 10c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 4.1 29.6 2 24 2 15.6 2 8.3 6.8 3.2 13.3z"/><path fill="#4CAF50" d="M24 46c5.5 0 10.5-2.1 14.2-5.6l-6.6-5.4c-2 1.5-4.6 2.5-7.6 2.5-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C8.2 41.1 15.5 46 24 46z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.6 5.4C41.7 35.9 46 30.5 46 24c0-1.3-.1-2.5-.4-3.5z"/></svg>
+        Masuk dengan Google
+      </button>
+
+      <div class="or">atau</div>
+      <button class="linklike" onclick="toggleEmail()" style="margin-top:0">Masuk pakai email (link ajaib) →</button>
+      <div class="emailrow" id="emailrow" style="margin-top:14px">
+        <input id="emailInput" type="email" inputmode="email" placeholder="emailmu@gmail.com" autocomplete="email">
+        <button class="goldbtn" onclick="doEmail()">Kirim link masuk</button>
+      </div>
+
+      <div class="msg" id="authMsg"></div>
+      <div class="note">Akses terbuka otomatis setelah pembelian kamu dikonfirmasi. Pakai email yang sama dengan saat checkout ya.</div>
+    </div>
+  </section>
+
+  <!-- MEMBER LIBRARY -->
+  <section id="library">
+    <div class="lib-h">
+      <div class="kick">Pustaka Member</div>
+      <h2 class="serif">Selamat datang kembali 🤍</h2>
+      <p>Semua produkmu siap dibuka. Ketuk untuk masuk.</p>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- DENIED -->
+  <section id="denied">
+    <div class="ic" style="width:54px;height:54px;border-radius:15px;background:radial-gradient(circle at 30% 30%,#2a2112,#15110a);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px">🔒</div>
+    <h2 class="serif">Akses belum aktif</h2>
+    <p>Akun <span class="em" id="deniedEmail"></span> belum terdaftar sebagai member.</p>
+    <p>Kalau kamu baru aja menyelesaikan pembelian, akses biasanya aktif beberapa saat setelah dikonfirmasi. Kalau sudah lama, hubungi admin ya.</p>
+    <a class="wa" id="waLink" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5-4.5-.2-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.4.7-.4h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.5-.3.3c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.4.1.6-.1l.7-.8c.2-.2.3-.2.5-.1l2 .9c.2.1.4.2.4.3.1.2.1.7-.1 1.2z"/></svg>
+      Hubungi Admin (WhatsApp)
+    </a>
+    <div style="margin-top:18px"><button class="ghostbtn" onclick="doLogout()">Masuk dengan akun lain</button></div>
+  </section>
+
+</div>
+
+<div id="demo">
+  <b>MODE DEMO</b> — Supabase belum diisi, jadi login asli belum aktif. Pratinjau tampilan:
+  <div class="dbtns">
+    <button onclick="demoView('member')">Lihat sebagai Member</button>
+    <button onclick="demoView('denied')">Lihat sebagai Non-member</button>
+    <button onclick="demoView('gate')">Halaman login</button>
+  </div>
+</div>
+
+<footer>
+  Yuk Khusyuk · <a href="https://lynk.id/yukkhusyuk" target="_blank" rel="noopener">lynk.id/yukkhusyuk</a> · <a href="https://wa.me/6289531845105" target="_blank" rel="noopener">WhatsApp</a><br>
+  Ruang cerita untuk jiwa yang lelah.
+</footer>
+
+<script>
+/* ============== KONFIGURASI (isi 2 baris ini dari Supabase) ============== */
+const SUPABASE_URL  = (window.YK_SUPABASE_URL  || "").replace(/\/+$/,"");
+const SUPABASE_ANON = window.YK_SUPABASE_ANON || "";
+const ADMIN_WA      = window.YK_ADMIN_WA || "6289531845105";
+
+/* ============== ISI PUSTAKA (urutan & link produk) ============== */
+const LIBRARY=[
+  {ic:"📖", tag:"E-book", title:"Menyelami Makna Sholat", desc:"E-book utama: pahami makna tiap bacaan & gerakan sholat, dari takbir sampai salam.", url:"files/menyelami-makna-sholat.pdf"},
+  {ic:"🎮", tag:"App", title:"Khusyuk Learn", desc:"Game belajar sholat ala Duolingo — bacaan, arti per kata, makna, & kuis interaktif.", url:"apps/khusyuk-learn.html"},
+  {ic:"🧮", tag:"Tools", title:"Kalkulator Cemas", desc:"Kenali & ukur tingkat cemasmu, lengkap dengan langkah ikhtiar lahir-batin.", url:"apps/kalkulator-cemas.html"},
+  {ic:"💸", tag:"Web App", title:"Teman Lunas", desc:"Pendamping AI buat yang lagi berjuang lunasin hutang — dengan pengingat yang menenangkan.", url:"https://teman-lunas-vfop.vercel.app/"},
+  {ic:"📓", tag:"Web App", title:"Journal Planner · Khusyuk 30 Hari", desc:"Jurnal harian terpandu untuk membangun kebiasaan hadir selama 30 hari.", url:"https://yukkhusyuk-journal-planner-121975077244.asia-southeast1.run.app/"},
+  {ic:"🌙", tag:"App", title:"Khusyuk+ (Mutaba'ah)", desc:"App mutaba'ah amal harian — pantau ibadah & istiqamah pelan-pelan, tiap hari.", url:"https://mutabaah.warungmarenta.com/app"},
+];
+
+/* ============== BACKEND ============== */
+let sb=null, BACKEND='demo';
+try{ if(SUPABASE_URL && SUPABASE_ANON && window.supabase){ sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON); BACKEND='supabase'; } }catch(e){ console.warn('Supabase init gagal',e); }
+
+const $=id=>document.getElementById(id);
+function show(sec){ ['gate','library','denied'].forEach(s=>{const el=$(s); if(!el)return; el.style.display='none'; el.classList.remove('show');}); $('spin').classList.remove('show');
+  if(sec){const el=$(sec); el.style.display=(sec==='library'||sec==='denied')?'block':'block'; el.classList.add('show'); if(sec==='library')el.style.display='block';} }
+function setWho(email){ if(email){ $('meEmail').textContent=email; $('whoami').style.display='flex'; } else { $('whoami').style.display='none'; } }
+function authMsg(t,kind){ const m=$('authMsg'); if(!t){m.className='msg';m.textContent='';return;} m.className='msg show '+(kind||'ok'); m.textContent=t; }
+function toggleEmail(){ $('emailrow').classList.toggle('show'); }
+
+function renderGrid(){
+  const g=$('grid'); g.innerHTML='';
+  LIBRARY.forEach(it=>{
+    const a=document.createElement('a'); a.className='card'; a.href=it.url; a.target='_blank'; a.rel='noopener';
+    a.innerHTML=`<span class="tag">${it.tag}</span><div class="ic">${it.ic}</div><h3>${it.title}</h3><div class="desc">${it.desc}</div><span class="open">Buka <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>`;
+    g.appendChild(a);
+  });
+}
+
+async function checkMember(email){
+  if(BACKEND!=='supabase') return true;
+  try{
+    const {data,error}=await sb.from('members').select('active').eq('email',(email||'').toLowerCase()).maybeSingle();
+    if(error){ console.warn('member check',error); return false; }
+    return !!(data && data.active);
+  }catch(e){ console.warn(e); return false; }
+}
+
+async function gateForEmail(email){
+  setWho(email);
+  const ok=await checkMember(email);
+  if(ok){ renderGrid(); show('library'); }
+  else { $('deniedEmail').textContent=email; show('denied'); }
+}
+
+/* ---- actions ---- */
+async function doGoogle(){
+  if(BACKEND!=='supabase'){ authMsg('Mode demo: pakai tombol "Lihat sebagai Member" di bawah untuk pratinjau.','ok'); return; }
+  authMsg('Mengalihkan ke Google…','ok');
+  const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+  if(error) authMsg(error.message,'err');
+}
+async function doEmail(){
+  const email=($('emailInput').value||'').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ authMsg('Format email belum tepat.','err'); return; }
+  if(BACKEND!=='supabase'){ authMsg('Mode demo: login email aktif setelah Supabase diisi.','ok'); return; }
+  authMsg('Mengirim link…','ok');
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}});
+  if(error) authMsg(error.message,'err');
+  else authMsg('Link masuk sudah dikirim ke '+email+'. Cek inbox/spam, lalu klik untuk lanjut. ✉️','ok');
+}
+async function doLogout(){
+  if(BACKEND==='supabase'){ try{ await sb.auth.signOut(); }catch(e){} }
+  location.href=location.origin+location.pathname;
+}
+
+/* ---- demo preview ---- */
+function demoView(which){
+  setWho(which==='gate'?null:'demo@gmail.com');
+  if(which==='member'){ renderGrid(); show('library'); }
+  else if(which==='denied'){ $('deniedEmail').textContent='kamu@gmail.com'; show('denied'); }
+  else { show('gate'); setWho(null); }
+}
+
+/* ---- init ---- */
+(async function init(){
+  $('waLink').href=`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent('Halo admin, saya sudah beli upsell Yuk Khusyuk tapi akses pustaka belum aktif. Email saya: ')}`;
+  if(BACKEND==='supabase'){
+    $('spin').classList.add('show');
+    try{
+      const {data}=await sb.auth.getSession();
+      if(data && data.session){ await gateForEmail(data.session.user.email); return; }
+    }catch(e){ console.warn(e); }
+    show('gate');
+  } else {
+    $('demo').classList.add('show');
+    show('gate');
+  }
+})();
+</script>
+</body>
+</html>
